@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+
+import { JoinService } from './join.service';
 
 @Component({
   selector: 'app-join',
@@ -7,14 +10,29 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
   styleUrls: ['./join.component.css']
 })
 export class JoinComponent implements OnInit {
+  errorMessage?: string;
 
-  constructor() { }
+  constructor(private joinService: JoinService, private router: Router) { }
 
   ngOnInit(): void {
   }
 
+  private clearErrors() {
+    this.errorMessage = null;
+  }
+
   onSubmit(): void {
-    console.log('Submitted!');
+    this.clearErrors();
+    var celebs: string[] = [this.choice0.value, this.choice1.value, this.choice2.value, this.choice3.value, this.choice4.value];
+    var wildcards: string[] = [this.wildcard0.value];
+    status = this.joinService.submitChoices(this.name.value, this.email.value, celebs, wildcards);
+    // TODO: Not fantastic to do string comparisons for statuses. Implement a proper status code and message system.
+    if (status === '') {
+      this.router.navigate(['/success']);
+    }
+    else {
+      this.errorMessage = status;
+    }
   }
 
   joinForm = new FormGroup({

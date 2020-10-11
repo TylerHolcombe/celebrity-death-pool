@@ -1,4 +1,7 @@
 <div class="container bg-dark text-white my-3 border rounded py-3">
+  <div *ngIf="errorMessage" class="container bg-danger mb-3 border rounded">
+    {{errorMessage}}
+  </div>
   <form [formGroup]="joinForm" (ngSubmit)="onSubmit()">
     <div *ngIf="name.invalid && (name.dirty || name.touched)">
       <div *ngIf="name.errors.required" class="container bg-warning my-1 border rounded py-1">

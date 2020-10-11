@@ -1,16 +1,19 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { ReactiveFormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { JoinComponent } from './join/join.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
+import { AppComponent } from './app.component';
+import { AppRoutingModule } from './app-routing.module';
+import { JoinComponent } from './join/join.component';
+import { SuccessComponent } from './join/success/success.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    JoinComponent
+    JoinComponent,
+    SuccessComponent
   ],
   imports: [
     AppRoutingModule,
