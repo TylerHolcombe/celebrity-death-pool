@@ -1,0 +1,91 @@
+<div class="container bg-dark text-white my-3 border rounded py-3">
+  <div *ngIf="errorMessage" class="container bg-danger mb-3 border rounded">
+    {{errorMessage}}
+  </div>
+  <form [formGroup]="joinForm" (ngSubmit)="onSubmit()">
+    <div *ngIf="name.invalid && (name.dirty || name.touched)">
+      <div *ngIf="name.errors.required" class="container bg-warning my-1 border rounded py-1">
+        Name is required.
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" id="name" class="form-control" formControlName="name">
+    </div>
+
+    <div *ngIf="email.invalid && (email.dirty || email.touched)">
+      <div *ngIf="email.errors.required" class="container bg-warning my-1 border rounded py-1">
+        Email is required.
+      </div>
+      <div *ngIf="email.errors.email" class="container bg-warning my-1 border rounded py-1">
+        Please enter a valid email address.
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" class="form-control" formControlName="email">
+    </div>
+
+    <div *ngIf="choice0.invalid && (choice0.dirty || choice0.touched)">
+      <div *ngIf="choice0.errors.required" class="container bg-warning my-1 border rounded py-1">
+        Please fill out all choices.
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="choice0">Celebrity 1</label>
+      <input type="text" id="choice0" class="form-control" formControlName="choice0">
+    </div>
+
+    <div *ngIf="choice1.invalid && (choice1.dirty || choice1.touched)">
+      <div *ngIf="choice1.errors.required" class="container bg-warning my-1 border rounded py-1">
+        Please fill out all choices.
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="choice1">Celebrity 2</label>
+      <input type="text" id="choice0" class="form-control" formControlName="choice1">
+    </div>
+
+    <div *ngIf="choice2.invalid && (choice2.dirty || choice2.touched)">
+      <div *ngIf="choice2.errors.required" class="container bg-warning my-1 border rounded py-1">
+        Please fill out all choices.
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="choice2">Celebrity 3</label>
+      <input type="text" id="choice0" class="form-control" formControlName="choice2">
+    </div>
+
+    <div *ngIf="choice3.invalid && (choice3.dirty || choice3.touched)">
+      <div *ngIf="choice3.errors.required" class="container bg-warning my-1 border rounded py-1">
+        Please fill out all choices.
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="choice3">Celebrity 4</label>
+      <input type="text" id="choice0" class="form-control" formControlName="choice3">
+    </div>
+
+    <div *ngIf="choice4.invalid && (choice4.dirty || choice4.touched)">
+      <div *ngIf="choice4.errors.required" class="container bg-warning my-1 border rounded py-1">
+        Please fill out all choices.
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="choice4">Celebrity 5</label>
+      <input type="text" id="choice0" class="form-control" formControlName="choice4">
+    </div>
+
+    <div *ngIf="wildcard0.invalid && (wildcard0.dirty || wildcard0.touched)">
+      <div *ngIf="wildcard0.errors.required" class="container bg-warning my-1 border rounded py-1">
+        Please fill out all choices.
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="wildcard0">Wildcard</label>
+      <input type="text" id="wildcard0" class="form-control" formControlName="wildcard0">
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100 mt-3" [disabled]="!joinForm.valid">Submit</button>
+  </form>
+</div>
