@@ -9,13 +9,15 @@ import { AppRoutingModule } from './app-routing.module';
 import { JoinComponent } from './join/join.component';
 import { MainComponent } from './main/main.component';
 import { SuccessComponent } from './join/success/success.component';
+import { TableComponent } from './main/table/table.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     JoinComponent,
     MainComponent,
-    SuccessComponent
+    SuccessComponent,
+    TableComponent
   ],
   imports: [
     AppRoutingModule,
