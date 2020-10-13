@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
+import { AdminComponent } from './admin/admin.component';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { JoinComponent } from './join/join.component';
@@ -13,6 +14,7 @@ import { TableComponent } from './main/table/table.component';
 
 @NgModule({
   declarations: [
+    AdminComponent,
     AppComponent,
     JoinComponent,
     MainComponent,
