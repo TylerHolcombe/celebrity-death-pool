@@ -9,6 +9,8 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { JoinComponent } from './join/join.component';
 import { MainComponent } from './main/main.component';
+import { PendingComponent } from './admin/pending/pending.component';
+import { PlayersComponent } from './admin/players/players.component';
 import { SuccessComponent } from './join/success/success.component';
 import { TableComponent } from './main/table/table.component';
 
@@ -18,8 +20,10 @@ import { TableComponent } from './main/table/table.component';
     AppComponent,
     JoinComponent,
     MainComponent,
+    PendingComponent,
+    PlayersComponent,
     SuccessComponent,
-    TableComponent
+    TableComponent,
   ],
   imports: [
     AppRoutingModule,
