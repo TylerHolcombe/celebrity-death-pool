@@ -9,6 +9,7 @@ import { Player } from '../../player';
 })
 export class TableComponent implements OnInit {
   @Input() players: Player[];
+  @Input() showApproved?: boolean;
 
   constructor() { }
 

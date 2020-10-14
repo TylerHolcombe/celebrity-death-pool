@@ -2,6 +2,7 @@ export class Player {
   name: string;
   points?: number;
   celebs?: Celebrity[];
+  isApproved?: boolean;
 
   constructor() {}
 }
