@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { Celebrity, Player } from '../../player';
+import { Player } from '../../player';
 import { PlayerService } from '../../player.service';
 
 @Component({

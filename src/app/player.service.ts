@@ -22,6 +22,12 @@ export class PlayerService {
     });
   }
 
+  getCelebrities(): Celebrity[] {
+    let celebs: Set<Celebrity> = new Set();
+    this.players.forEach(p => p.celebs.forEach(c => celebs.add(c)));
+    return Array.from(celebs.values());
+  }
+
   // TODO: remove mocked data for an actual data source
   private players: Player[] = players;
 }
