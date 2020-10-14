@@ -1,11 +1,13 @@
 <div class="container bg-dark text-white my-3 border rounded py-3">
-  <ul ngbNav #nav="ngbNav" class="nav-pills">
-    <li ngbNavItem>
-      <a ngbNavLink routerLink="players">Players</a>
-    </li>
-    <li ngbNavItem>
-      <a ngbNavLink routerLink="pending">Pending Players</a>
-    </li>
-  </ul>
+  <div class="sticky-top bg-dark">
+    <ul ngbNav #nav="ngbNav" class="nav-pills">
+      <li ngbNavItem>
+        <a ngbNavLink routerLink="players">Players</a>
+      </li>
+      <li ngbNavItem>
+        <a ngbNavLink routerLink="pending">Pending Players</a>
+      </li>
+    </ul>
+  </div>
   <router-outlet></router-outlet>
 </div>
