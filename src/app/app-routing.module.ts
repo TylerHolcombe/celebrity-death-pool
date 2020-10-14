@@ -11,6 +11,7 @@ import { SuccessComponent } from './join/success/success.component';
 const routes: Routes = [
   {path: '', redirectTo: 'main', pathMatch: 'full'},
   {path: 'admin', component: AdminComponent, children: [
+    {path:'', redirectTo: 'players', pathMatch: 'full'},
     {path: 'pending', component: PendingComponent},
     {path: 'players', component: PlayersComponent},
   ]},
