@@ -13,6 +13,12 @@ RUN ng build --prod=true --output-path=dist
 
 ### deploy ###
 FROM nginx:1.18.0-alpine
+# Remove default page
+RUN rm -rf /usr/share/nginx/html/*
+# Copy build and configuration
 COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/nginx.conf
+# Expose ports
 EXPOSE 80
+# Start the server
 CMD ["nginx", "-g", "daemon off;"]
