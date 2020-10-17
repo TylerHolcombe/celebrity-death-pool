@@ -10,10 +10,9 @@
     "module": "esnext",
     "moduleResolution": "node",
     "importHelpers": true,
-    // TODO: upgrade target es version when bug with nginx is fixed
-    "target": "es5",
+    "target": "es2019",
     "lib": [
-      "es2018",
+      "es2019",
       "dom"
     ]
   },
