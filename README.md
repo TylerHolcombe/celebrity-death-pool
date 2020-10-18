@@ -2,7 +2,11 @@
 
 ## Prod deployment instructions
 1. Log in to google cloud console
-2. Run the script:
+2a. Make sure the git repo is cloned:
+```
+git clone https://github.com/TylerHolcombe/celebrity-death-pool.git
+```
+2b. Run the script:
 ```
 cd celebrity-death-pool
 git pull
