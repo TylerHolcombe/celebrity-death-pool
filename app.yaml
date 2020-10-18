@@ -1,5 +1,6 @@
 runtime: custom
-env: flex
+env: standard
+instance_class: B1
 
 manual_scaling:
   instances: 1
