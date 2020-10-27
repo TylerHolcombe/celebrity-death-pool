@@ -5,7 +5,7 @@ CREATE TABLE player (
 	player_id BIGINT AUTO_INCREMENT NOT NULL UNIQUE,
     first_name VARCHAR(255),
     last_name VARCHAR(255),
-    email_address VARCHAR(255),
+    email_address VARCHAR(255) NOT NULL UNIQUE,
     PRIMARY KEY (player_id)
 );
 
