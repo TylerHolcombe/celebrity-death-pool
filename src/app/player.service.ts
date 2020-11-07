@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { AppSettings } from './app-settings';
+import { environment } from '../environments/environment';
 import { players } from './data/data'
 import { Player, Celebrity } from './player';
 
@@ -8,10 +9,12 @@ import { Player, Celebrity } from './player';
   providedIn: 'root'
 })
 export class PlayerService {
+  private serviceEndpoint: string = environment.serviceEndpoint;
+  private servicePort: number = environment.servicePort;
 
   constructor() { }
 
-  getAllPlayers(): Player[] {
+  getApprovedPlayers(): Player[] {
     return this.players.filter(player => {
       return player.isApproved;
     });

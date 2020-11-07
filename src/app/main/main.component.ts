@@ -14,7 +14,7 @@ export class MainComponent implements OnInit {
   constructor(private playerService: PlayerService) { }
 
   ngOnInit(): void {
-    this.players = this.playerService.getAllPlayers();
+    this.players = this.playerService.getApprovedPlayers();
   }
 
 }
