@@ -21,12 +21,17 @@ export class PlayerService {
       .pipe(
         tap(_ => this.log('fetched approved entries')),
         map(entries => entries.map(entry => this.mapResultToEntry(entry))),
-        catchError(this.handleError)
+        catchError(this.handleError<Entry[]>('getApprovedEntries'))
       );
   }
 
   getPendingEntries(): Observable<Entry[]> {
-    return of([]);
+    return this.http.get<Entry[]>(this.serviceEndpoint + '/entries/unapproved')
+      .pipe(
+        tap(_ => this.log('fetched unapproved entries')),
+        map(entries => entries.map(entry => this.mapResultToEntry(entry))),
+        catchError(this.handleError<Entry[]>('getPendingEntries'))
+      );
   }
 
   getCelebrities(): Observable<Celebrity[]> {
