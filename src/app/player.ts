@@ -3,8 +3,6 @@ export class Player {
   lastname: string;
   email?: string;
   entries?: Entry[];
-
-  constructor() { }
 }
 
 export class Entry {

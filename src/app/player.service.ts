@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { Observable, of } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, tap, map } from 'rxjs/operators';
 
 import { AppSettings } from './app-settings';
 import { Celebrity, Entry, Player } from './player';
@@ -17,10 +17,12 @@ export class PlayerService {
   constructor(private http: HttpClient) { }
 
   getApprovedEntries(): Observable<Entry[]> {
-    return this.http.get<Entry[]>(this.serviceEndpoint + '/entries/approved').pipe(
-      tap(_ => this.log('fetched approved entries')),
-      catchError(this.handleError)
-    );
+    return this.http.get<Entry[]>(this.serviceEndpoint + '/entries/approved')
+      .pipe(
+        tap(_ => this.log('fetched approved entries')),
+        map(entries => entries.map(entry => this.mapResultToEntry(entry))),
+        catchError(this.handleError)
+      );
   }
 
   getPendingEntries(): Observable<Entry[]> {
@@ -65,6 +67,46 @@ export class PlayerService {
       return 'Failed to connect to the database. This may be temporary, please try again later.';
     }
     return '';
+  }
+
+  private mapResultToEntry(result: any): Entry {
+    let entry: Entry = new Entry();
+    entry.points = 0;
+    entry.isApproved = result.approved;
+    entry.isPaid = result.paid;
+    entry.player = this.mapResultToPlayer(result.player);
+    entry.selections = [];
+    if (result.selections) {
+      // Using for (let celebs in result.selections) interpreted the object as a string
+      for (let i = 0; i < result.selections.length; i++) {
+        let celeb = result.selections[i];
+        entry.selections.push(this.mapResultToCelebrity(celeb));
+        if (celeb.dead) {
+          entry.points += celeb.wildcard ? AppSettings.WILDCARD_VALUE : AppSettings.STANDARD_VALUE;
+        }
+      }
+    }
+    return entry;
+  }
+
+  private mapResultToPlayer(result: any): Player {
+    let player: Player = new Player();
+    player.firstname = result.firstName;
+    player.lastname = result.lastName;
+    player.email = result.emailAddress;
+    player.entries = [];
+    for (let entry in result.entries) {
+      player.entries.push(this.mapResultToEntry(entry));
+    }
+    return player;
+  }
+
+  private mapResultToCelebrity(result: any): Celebrity {
+    let celeb: Celebrity = new Celebrity();
+    celeb.name = result.celebrityName;
+    celeb.isDead = result.dead;
+    celeb.isWildcard = result.wildcard;
+    return celeb;
   }
 
   private handleError<T>(operation = 'operation', result?: T) {
