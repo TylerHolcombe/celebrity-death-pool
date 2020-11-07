@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 
-import { Player } from '../../player';
+import { Entry } from '../../player';
 
 @Component({
   selector: 'app-table',
@@ -8,7 +8,7 @@ import { Player } from '../../player';
   styleUrls: ['./table.component.css']
 })
 export class TableComponent implements OnInit {
-  @Input() players: Player[];
+  @Input() entries: Entry[];
   @Input() showApproved?: boolean;
 
   constructor() { }

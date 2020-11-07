@@ -1,41 +1,34 @@
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+
+import { Observable, of } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 
 import { AppSettings } from './app-settings';
+import { Celebrity, Entry, Player } from './player';
 import { environment } from '../environments/environment';
-import { players } from './data/data'
-import { Player, Celebrity } from './player';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PlayerService {
   private serviceEndpoint: string = environment.serviceEndpoint;
-  private servicePort: number = environment.servicePort;
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
-  getApprovedPlayers(): Player[] {
-    return this.players.filter(player => {
-      return player.isApproved;
-    });
+  getApprovedEntries(): Observable<Entry[]> {
+    return this.http.get<Entry[]>(this.serviceEndpoint + '/entries/approved').pipe(
+      tap(_ => this.log('fetched approved entries')),
+      catchError(this.handleError)
+    );
   }
 
-  getPendingPlayers(): Player[] {
-    return this.players.filter(player => {
-      return !player.isApproved;
-    });
+  getPendingEntries(): Observable<Entry[]> {
+    return of([]);
   }
 
-  getCelebrities(): Celebrity[] {
-    let hasCeleb = {};
-    let celebs = [];
-    players.forEach(p => p.celebs.forEach(c => {
-      if (!hasCeleb[c.name]) {
-        hasCeleb[c.name] = true;
-        celebs.push(c);
-      }
-    }));
-    return celebs;
+  getCelebrities(): Observable<Celebrity[]> {
+    return of([]);
   }
 
   submitPlayer(name: string, email: string, celebs: string[], wildcards: string[]): string {
@@ -74,6 +67,18 @@ export class PlayerService {
     return '';
   }
 
-  // TODO: remove mocked data for an actual data source
-  private players: Player[] = players;
+  private handleError<T>(operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+      console.error(error);
+      this.log(`${operation} failed: ${error.message}`);
+
+      return of(result as T);
+    };
+  }
+
+  // TODO: consider using a message service to send logs to server
+  /** Log a message */
+  private log(message: string) {
+    console.log(`PlayerService: ${message}`);
+  }
 }

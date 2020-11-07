@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { Player } from '../../player';
+import { Entry } from '../../player';
 import { PlayerService } from '../../player.service';
 
 @Component({
@@ -9,11 +9,15 @@ import { PlayerService } from '../../player.service';
   styleUrls: ['./pending.component.css']
 })
 export class PendingComponent implements OnInit {
-  players: Player[];
+  entries: Entry[];
 
   constructor(private playerService: PlayerService) { }
 
   ngOnInit(): void {
-    this.players = this.playerService.getPendingPlayers();
+    this.getPendingEntries();
+  }
+
+  getPendingEntries(): void {
+    this.playerService.getPendingEntries().subscribe(entries => this.entries = entries);
   }
 }

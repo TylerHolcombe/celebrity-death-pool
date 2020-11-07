@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { Player } from '../player';
+import { Entry } from '../player';
 import { PlayerService } from '../player.service';
 
 @Component({
@@ -9,12 +9,16 @@ import { PlayerService } from '../player.service';
   styleUrls: ['./main.component.css']
 })
 export class MainComponent implements OnInit {
-  players: Player[];
+  entries: Entry[];
 
   constructor(private playerService: PlayerService) { }
 
   ngOnInit(): void {
-    this.players = this.playerService.getApprovedPlayers();
+    this.getEntries();
+  }
+
+  getEntries(): void {
+    this.playerService.getApprovedEntries().subscribe(entries => this.entries = entries);
   }
 
 }

@@ -1,14 +1,22 @@
 export class Player {
-  name: string;
-  points?: number;
-  celebs?: Celebrity[];
-  isApproved?: boolean;
+  firstname: string;
+  lastname: string;
+  email?: string;
+  entries?: Entry[];
 
-  constructor() {}
+  constructor() { }
+}
+
+export class Entry {
+  points?: number;
+  isApproved?: boolean;
+  isPaid?: boolean;
+  selections?: Celebrity[];
+  player?: Player;
 }
 
 export class Celebrity {
   name: string;
-  isWildcard?: boolean;
   isDead?: boolean;
+  isWildcard?: boolean;
 }

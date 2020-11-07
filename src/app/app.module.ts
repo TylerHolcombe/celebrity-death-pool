@@ -1,4 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 
@@ -30,6 +31,7 @@ import { TableComponent } from './main/table/table.component';
   imports: [
     AppRoutingModule,
     BrowserModule,
+    HttpClientModule,
     ReactiveFormsModule,
     NgbModule
   ],

@@ -8,19 +8,15 @@
     </tr>
   </thead>
   <tbody>
-    <ng-container *ngFor="let player of players; let index = index;">
+    <ng-container *ngFor="let entry of entries; let index = index;">
       <tr>
-        <td *ngIf="showApproved" [rowSpan]="player.celebs.length + 1" class="text-center">
-          <input
-            type="checkbox"
-            class="form-check-input"
-            [checked]="players[index].isApproved"
-            (change)="players[index].isApproved = !players[index].isApproved">
+        <td *ngIf="showApproved" [rowSpan]="entry.selections.length + 1" class="text-center">
+          <input type="checkbox" class="form-check-input" [checked]="entries[index].isApproved" (change)="entries[index].isApproved = !entries[index].isApproved">
         </td>
-        <td [rowSpan]="player.celebs.length + 1">{{player.name}}</td>
-        <td [rowSpan]="player.celebs.length + 1">{{player.points}}</td>
+        <td [rowSpan]="entry.selections.length + 1">{{entry.player.firstname}} {{entry.player.lastname}}</td>
+        <td [rowSpan]="entry.selections.length + 1">{{entry.points}}</td>
       </tr>
-      <tr *ngFor="let celeb of player.celebs">
+      <tr *ngFor="let celeb of entry.selections">
         <td>
           <ng-container *ngIf="celeb.isWildcard">Wildcard: </ng-container>
           {{celeb.name}}

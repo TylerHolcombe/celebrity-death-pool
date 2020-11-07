@@ -5,8 +5,7 @@
 export const environment = {
   production: false,
   // Service connection info for local testing
-  serviceEndpoint: 'localhost',
-  servicePort: 8080
+  serviceEndpoint: 'http://localhost:8080'
 };
 
 /*
