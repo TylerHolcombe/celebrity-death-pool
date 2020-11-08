@@ -1,38 +1,46 @@
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+
+import { Observable, of } from 'rxjs';
+import { catchError, tap, map } from 'rxjs/operators';
 
 import { AppSettings } from './app-settings';
-import { players } from './data/data'
-import { Player, Celebrity } from './player';
+import { Celebrity, Entry, Player } from './player';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PlayerService {
+  private serviceEndpoint: string = environment.serviceEndpoint;
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
-  getAllPlayers(): Player[] {
-    return this.players.filter(player => {
-      return player.isApproved;
-    });
+  getApprovedEntries(): Observable<Entry[]> {
+    return this.http.get<Entry[]>(this.serviceEndpoint + '/entries/approved')
+      .pipe(
+        tap(_ => this.log('fetched approved entries')),
+        map(entries => entries.map(entry => this.mapResultToEntry(entry))),
+        catchError(this.handleError<Entry[]>('getApprovedEntries'))
+      );
   }
 
-  getPendingPlayers(): Player[] {
-    return this.players.filter(player => {
-      return !player.isApproved;
-    });
+  getPendingEntries(): Observable<Entry[]> {
+    return this.http.get<Entry[]>(this.serviceEndpoint + '/entries/unapproved')
+      .pipe(
+        tap(_ => this.log('fetched unapproved entries')),
+        map(entries => entries.map(entry => this.mapResultToEntry(entry))),
+        catchError(this.handleError<Entry[]>('getPendingEntries'))
+      );
   }
 
-  getCelebrities(): Celebrity[] {
-    let hasCeleb = {};
-    let celebs = [];
-    players.forEach(p => p.celebs.forEach(c => {
-      if (!hasCeleb[c.name]) {
-        hasCeleb[c.name] = true;
-        celebs.push(c);
-      }
-    }));
-    return celebs;
+  getCelebrities(): Observable<Celebrity[]> {
+    return this.http.get<Celebrity[]>(this.serviceEndpoint + '/celebrities')
+      .pipe(
+        tap(_ => this.log('fetched celebrities')),
+        map(celebrities => celebrities.map(celebrity => this.mapResultToCelebrity(celebrity))),
+        catchError(this.handleError<Celebrity[]>('getCelebrities'))
+      );
   }
 
   submitPlayer(name: string, email: string, celebs: string[], wildcards: string[]): string {
@@ -71,6 +79,58 @@ export class PlayerService {
     return '';
   }
 
-  // TODO: remove mocked data for an actual data source
-  private players: Player[] = players;
+  private mapResultToEntry(result: any): Entry {
+    let entry: Entry = new Entry();
+    entry.points = 0;
+    entry.isApproved = result.approved;
+    entry.isPaid = result.paid;
+    entry.player = this.mapResultToPlayer(result.player);
+    entry.selections = [];
+    if (result.selections) {
+      // Using for (let celebs in result.selections) interpreted the object as a string
+      for (let i = 0; i < result.selections.length; i++) {
+        let celeb = result.selections[i];
+        entry.selections.push(this.mapResultToCelebrity(celeb));
+        if (celeb.dead) {
+          entry.points += celeb.wildcard ? AppSettings.WILDCARD_VALUE : AppSettings.STANDARD_VALUE;
+        }
+      }
+    }
+    return entry;
+  }
+
+  private mapResultToPlayer(result: any): Player {
+    let player: Player = new Player();
+    player.firstname = result.firstName;
+    player.lastname = result.lastName;
+    player.email = result.emailAddress;
+    player.entries = [];
+    for (let entry in result.entries) {
+      player.entries.push(this.mapResultToEntry(entry));
+    }
+    return player;
+  }
+
+  private mapResultToCelebrity(result: any): Celebrity {
+    let celeb: Celebrity = new Celebrity();
+    celeb.name = result.celebrityName;
+    celeb.isDead = result.dead;
+    celeb.isWildcard = result.wildcard;
+    return celeb;
+  }
+
+  private handleError<T>(operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+      console.error(error);
+      this.log(`${operation} failed: ${error.message}`);
+
+      return of(result as T);
+    };
+  }
+
+  // TODO: consider using a message service to send logs to server
+  /** Log a message */
+  private log(message: string) {
+    console.log(`PlayerService: ${message}`);
+  }
 }

@@ -14,7 +14,10 @@ export class CelebsComponent implements OnInit {
   constructor(private playerService: PlayerService) { }
 
   ngOnInit(): void {
-    this.celebs = this.playerService.getCelebrities();
+    this.getCelebs();
   }
 
+  getCelebs(): void {
+    this.playerService.getCelebrities().subscribe(celebs => this.celebs = celebs);
+  }
 }
