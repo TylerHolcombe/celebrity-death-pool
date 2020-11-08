@@ -35,7 +35,12 @@ export class PlayerService {
   }
 
   getCelebrities(): Observable<Celebrity[]> {
-    return of([]);
+    return this.http.get<Celebrity[]>(this.serviceEndpoint + '/celebrities')
+      .pipe(
+        tap(_ => this.log('fetched celebrities')),
+        map(celebrities => celebrities.map(celebrity => this.mapResultToCelebrity(celebrity))),
+        catchError(this.handleError<Celebrity[]>('getCelebrities'))
+      );
   }
 
   submitPlayer(name: string, email: string, celebs: string[], wildcards: string[]): string {
