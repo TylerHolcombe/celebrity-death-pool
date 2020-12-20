@@ -43,18 +43,29 @@ export class PlayerService {
       );
   }
 
-  submitPlayer(name: string, email: string, celebs: string[], wildcards: string[]): string {
+  submitPlayer(firstName: string, lastName: string, email: string): Observable<bigint> {
+    let player: Player = {
+      firstName: firstName,
+      lastName: lastName,
+      emailAddress: email
+    };
+    return this.http.post<bigint>(this.serviceEndpoint + "/players", player)
+      .pipe(
+        tap(_ => this.log("committing player")),
+        catchError(this.handleError<bigint>('commitPlayer'))
+      );
+  }
+
+  submitEntry(playerId: bigint, celebs: string[], wildcards: string[]) {
     status = this.validateCelebSubmissions(celebs);
     // TODO: Not fantastic to do string comparisons for statuses. Implement a proper status code and message system.
     if (status !== '') {
-      return status;
+      return this.createError<bigint>("submitEntry", status);
     }
     status = this.validateWildcardSubmissions(wildcards);
     if (status !== '') {
-      return status;
+      return this.createError<bigint>("submitEntry", status);
     }
-
-    return this.commitPlayer(name, email, celebs, wildcards);
   }
 
   private validateCelebSubmissions(celebs: string[]): string {
@@ -67,14 +78,6 @@ export class PlayerService {
   private validateWildcardSubmissions(wildcards: string[]): string {
     if (wildcards.length !== AppSettings.NUM_WILDCARDS) {
       return 'Invalid number of celebrities.';
-    }
-    return '';
-  }
-
-  private commitPlayer(name: string, email: string, celebs: string[], wildcards: string[]) {
-    // TODO: implement a DB commit here
-    if (name === 'connection error') {
-      return 'Failed to connect to the database. This may be temporary, please try again later.';
     }
     return '';
   }
@@ -101,9 +104,9 @@ export class PlayerService {
 
   private mapResultToPlayer(result: any): Player {
     let player: Player = new Player();
-    player.firstname = result.firstName;
-    player.lastname = result.lastName;
-    player.email = result.emailAddress;
+    player.firstName = result.firstName;
+    player.lastName = result.lastName;
+    player.emailAddress = result.emailAddress;
     player.entries = [];
     for (let entry in result.entries) {
       player.entries.push(this.mapResultToEntry(entry));
@@ -126,6 +129,13 @@ export class PlayerService {
 
       return of(result as T);
     };
+  }
+
+  private createError<T>(operation = 'operation', message = 'message', result?: T) {
+    console.error(message);
+    this.log(`${operation} failed: ${message}`);
+
+    return of(result as T);
   }
 
   // TODO: consider using a message service to send logs to server

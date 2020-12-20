@@ -1,7 +1,7 @@
 export class Player {
-  firstname: string;
-  lastname: string;
-  email?: string;
+  firstName: string;
+  lastName: string;
+  emailAddress?: string;
   entries?: Entry[];
 }
 
