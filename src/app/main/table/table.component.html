@@ -10,17 +10,17 @@
   <tbody>
     <ng-container *ngFor="let entry of entries; let index = index;">
       <tr>
-        <td *ngIf="showApproved" [rowSpan]="entry.selections.length + 1" class="text-center">
-          <input type="checkbox" class="form-check-input" [checked]="entries[index].isApproved" (change)="entries[index].isApproved = !entries[index].isApproved">
+        <td *ngIf="showApproved" [rowSpan]="entry.entrySelections.length + 1" class="text-center">
+          <input type="checkbox" class="form-check-input" [checked]="entries[index].approved" (change)="entries[index].approved = !entries[index].approved">
         </td>
-        <td [rowSpan]="entry.selections.length + 1">{{entry.player.firstname}} {{entry.player.lastname}}</td>
-        <td [rowSpan]="entry.selections.length + 1">{{entry.points}}</td>
+        <td [rowSpan]="entry.entrySelections.length + 1">{{entry.player.firstName}} {{entry.player.lastName}}</td>
+        <td [rowSpan]="entry.entrySelections.length + 1">{{entry.points}}</td>
       </tr>
-      <tr *ngFor="let celeb of entry.selections">
+      <tr *ngFor="let selection of entry.entrySelections">
         <td>
-          <ng-container *ngIf="celeb.isWildcard">Wildcard: </ng-container>
-          {{celeb.name}}
-          <ng-container *ngIf="celeb.isDead">&#x2620;</ng-container>
+          <ng-container *ngIf="selection.wildcard">Wildcard: </ng-container>
+          {{selection.celebrity.celebrityName}}
+          <ng-container *ngIf="selection.celebrity.dead">&#x2620;</ng-container>
         </td>
       </tr>
     </ng-container>

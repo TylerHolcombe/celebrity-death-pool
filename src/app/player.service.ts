@@ -5,7 +5,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
 
 import { AppSettings } from './app-settings';
-import { Celebrity, Entry, Player } from './player';
+import { Celebrity, Entry, EntrySelection, Player } from './player';
 import { environment } from '../environments/environment';
 
 @Injectable({
@@ -38,7 +38,7 @@ export class PlayerService {
     return this.http.get<Celebrity[]>(this.serviceEndpoint + '/celebrities')
       .pipe(
         tap(_ => this.log('fetched celebrities')),
-        map(celebrities => celebrities.map(celebrity => this.mapResultToCelebrity(celebrity))),
+        map(celebrities => celebrities.map(celebrity => Object.assign({}, celebrity))),
         catchError(this.handleError<Celebrity[]>('getCelebrities'))
       );
   }
@@ -83,43 +83,20 @@ export class PlayerService {
   }
 
   private mapResultToEntry(result: any): Entry {
-    let entry: Entry = new Entry();
-    entry.points = 0;
-    entry.isApproved = result.approved;
-    entry.isPaid = result.paid;
-    entry.player = this.mapResultToPlayer(result.player);
-    entry.selections = [];
-    if (result.selections) {
-      // Using for (let celebs in result.selections) interpreted the object as a string
-      for (let i = 0; i < result.selections.length; i++) {
-        let celeb = result.selections[i];
-        entry.selections.push(this.mapResultToCelebrity(celeb));
-        if (celeb.dead) {
-          entry.points += celeb.wildcard ? AppSettings.WILDCARD_VALUE : AppSettings.STANDARD_VALUE;
-        }
-      }
-    }
+    let entry: Entry = Object.assign({}, result);
+    entry.points = this.calculatePoints(entry.entrySelections);
     return entry;
   }
 
-  private mapResultToPlayer(result: any): Player {
-    let player: Player = new Player();
-    player.firstName = result.firstName;
-    player.lastName = result.lastName;
-    player.emailAddress = result.emailAddress;
-    player.entries = [];
-    for (let entry in result.entries) {
-      player.entries.push(this.mapResultToEntry(entry));
-    }
-    return player;
-  }
+  private calculatePoints(selections: EntrySelection[]): number {
+    let points = 0;
+    selections.forEach(selection => {
+      if (selection.celebrity.dead) {
+        points += selection.wildcard ? AppSettings.WILDCARD_VALUE : AppSettings.STANDARD_VALUE;
+      }
+    });
 
-  private mapResultToCelebrity(result: any): Celebrity {
-    let celeb: Celebrity = new Celebrity();
-    celeb.name = result.celebrityName;
-    celeb.isDead = result.dead;
-    celeb.isWildcard = result.wildcard;
-    return celeb;
+    return points;
   }
 
   private handleError<T>(operation = 'operation', result?: T) {
