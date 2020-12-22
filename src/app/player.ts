@@ -1,7 +1,7 @@
 export class Player {
   playerId?: bigint;
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
   emailAddress?: string;
   entries?: Entry[];
 }
@@ -23,6 +23,6 @@ export class EntrySelection {
 
 export class Celebrity {
   celebrityId?: bigint;
-  celebrityName: string;
+  celebrityName?: string;
   dead?: boolean;
 }

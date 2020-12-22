@@ -56,16 +56,45 @@ export class PlayerService {
       );
   }
 
-  submitEntry(playerId: bigint, celebs: string[], wildcards: string[]) {
+  submitEntry(playerId: bigint, celebs: string[], wildcards: string[]): Observable<bigint> {
     status = this.validateCelebSubmissions(celebs);
-    // TODO: Not fantastic to do string comparisons for statuses. Implement a proper status code and message system.
-    if (status !== '') {
-      return this.createError<bigint>("submitEntry", status);
-    }
     status = this.validateWildcardSubmissions(wildcards);
     if (status !== '') {
       return this.createError<bigint>("submitEntry", status);
     }
+
+    let selections: EntrySelection[] = [];
+    for (let selection of celebs) {
+      selections.push(this.mapSelection(selection, false));
+    }
+    for (let selection of wildcards) {
+      selections.push(this.mapSelection(selection, true));
+    }
+
+    let entry: Entry = {
+      approved: false,
+      paid: false,
+      player: {
+        playerId: playerId
+      },
+      entrySelections: selections
+    }
+
+    return this.http.post<bigint>(this.serviceEndpoint + "/entries", entry)
+      .pipe(
+        tap(_ => this.log("committing entry")),
+        catchError(this.handleError<bigint>('commitEntry'))
+      );
+  }
+
+  private mapSelection(selection: string, wildcard: boolean): EntrySelection {
+    let entrySelection: EntrySelection = {
+      celebrity: {
+        celebrityName: selection
+      },
+      wildcard: wildcard
+    }
+    return entrySelection;
   }
 
   private validateCelebSubmissions(celebs: string[]): string {

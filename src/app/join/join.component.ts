@@ -31,11 +31,20 @@ export class JoinComponent implements OnInit {
           this.errorMessage = 'Something went wrong! Please try again later';
           this.hasError = true;
         }
-        let celebs: string[] = [this.choice0.value, this.choice1.value, this.choice2.value, this.choice3.value, this.choice4.value];
-        let wildcards: string[] = [this.wildcard0.value];
-        // TODO: Not fantastic to do string comparisons for statuses. Implement a proper status code and message system.
+
         if (!this.hasError) {
-          this.router.navigate(['/success']);
+          let celebs: string[] = [this.choice0.value, this.choice1.value, this.choice2.value, this.choice3.value, this.choice4.value];
+          let wildcards: string[] = [this.wildcard0.value];
+          this.playerService.submitEntry(id, celebs, wildcards).subscribe((id) => {
+            if (id === undefined) {
+              this.errorMessage = 'Something went wrong! Please try again later';
+              this.hasError = true;
+            }
+            // TODO: Not fantastic to do string comparisons for statuses. Implement a proper status code and message system.
+            if (!this.hasError) {
+              this.router.navigate(['/success']);
+            }
+          });
         }
       });
   }
