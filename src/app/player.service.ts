@@ -5,7 +5,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
 
 import { AppSettings } from './app-settings';
-import { Celebrity, Entry, Player } from './player';
+import { Celebrity, Entry, EntrySelection, Player } from './player';
 import { environment } from '../environments/environment';
 
 @Injectable({
@@ -38,23 +38,63 @@ export class PlayerService {
     return this.http.get<Celebrity[]>(this.serviceEndpoint + '/celebrities')
       .pipe(
         tap(_ => this.log('fetched celebrities')),
-        map(celebrities => celebrities.map(celebrity => this.mapResultToCelebrity(celebrity))),
+        map(celebrities => celebrities.map(celebrity => Object.assign({}, celebrity))),
         catchError(this.handleError<Celebrity[]>('getCelebrities'))
       );
   }
 
-  submitPlayer(name: string, email: string, celebs: string[], wildcards: string[]): string {
+  submitPlayer(firstName: string, lastName: string, email: string): Observable<bigint> {
+    let player: Player = {
+      firstName: firstName,
+      lastName: lastName,
+      emailAddress: email
+    };
+    return this.http.post<bigint>(this.serviceEndpoint + "/players", player)
+      .pipe(
+        tap(_ => this.log("committing player")),
+        catchError(this.handleError<bigint>('commitPlayer'))
+      );
+  }
+
+  submitEntry(playerId: bigint, celebs: string[], wildcards: string[]): Observable<bigint> {
     status = this.validateCelebSubmissions(celebs);
-    // TODO: Not fantastic to do string comparisons for statuses. Implement a proper status code and message system.
-    if (status !== '') {
-      return status;
-    }
     status = this.validateWildcardSubmissions(wildcards);
     if (status !== '') {
-      return status;
+      return this.createError<bigint>("submitEntry", status);
     }
 
-    return this.commitPlayer(name, email, celebs, wildcards);
+    let selections: EntrySelection[] = [];
+    for (let selection of celebs) {
+      selections.push(this.mapSelection(selection, false));
+    }
+    for (let selection of wildcards) {
+      selections.push(this.mapSelection(selection, true));
+    }
+
+    let entry: Entry = {
+      approved: false,
+      paid: false,
+      player: {
+        playerId: playerId
+      },
+      entrySelections: selections
+    }
+
+    return this.http.post<bigint>(this.serviceEndpoint + "/entries", entry)
+      .pipe(
+        tap(_ => this.log("committing entry")),
+        catchError(this.handleError<bigint>('commitEntry'))
+      );
+  }
+
+  private mapSelection(selection: string, wildcard: boolean): EntrySelection {
+    let entrySelection: EntrySelection = {
+      celebrity: {
+        celebrityName: selection
+      },
+      wildcard: wildcard
+    }
+    return entrySelection;
   }
 
   private validateCelebSubmissions(celebs: string[]): string {
@@ -71,52 +111,21 @@ export class PlayerService {
     return '';
   }
 
-  private commitPlayer(name: string, email: string, celebs: string[], wildcards: string[]) {
-    // TODO: implement a DB commit here
-    if (name === 'connection error') {
-      return 'Failed to connect to the database. This may be temporary, please try again later.';
-    }
-    return '';
-  }
-
   private mapResultToEntry(result: any): Entry {
-    let entry: Entry = new Entry();
-    entry.points = 0;
-    entry.isApproved = result.approved;
-    entry.isPaid = result.paid;
-    entry.player = this.mapResultToPlayer(result.player);
-    entry.selections = [];
-    if (result.selections) {
-      // Using for (let celebs in result.selections) interpreted the object as a string
-      for (let i = 0; i < result.selections.length; i++) {
-        let celeb = result.selections[i];
-        entry.selections.push(this.mapResultToCelebrity(celeb));
-        if (celeb.dead) {
-          entry.points += celeb.wildcard ? AppSettings.WILDCARD_VALUE : AppSettings.STANDARD_VALUE;
-        }
-      }
-    }
+    let entry: Entry = Object.assign({}, result);
+    entry.points = this.calculatePoints(entry.entrySelections);
     return entry;
   }
 
-  private mapResultToPlayer(result: any): Player {
-    let player: Player = new Player();
-    player.firstname = result.firstName;
-    player.lastname = result.lastName;
-    player.email = result.emailAddress;
-    player.entries = [];
-    for (let entry in result.entries) {
-      player.entries.push(this.mapResultToEntry(entry));
-    }
-    return player;
-  }
+  private calculatePoints(selections: EntrySelection[]): number {
+    let points = 0;
+    selections.forEach(selection => {
+      if (selection.celebrity.dead) {
+        points += selection.wildcard ? AppSettings.WILDCARD_VALUE : AppSettings.STANDARD_VALUE;
+      }
+    });
 
-  private mapResultToCelebrity(result: any): Celebrity {
-    let celeb: Celebrity = new Celebrity();
-    celeb.name = result.celebrityName;
-    celeb.isDead = result.dead;
-    celeb.isWildcard = result.wildcard;
-    return celeb;
+    return points;
   }
 
   private handleError<T>(operation = 'operation', result?: T) {
@@ -126,6 +135,13 @@ export class PlayerService {
 
       return of(result as T);
     };
+  }
+
+  private createError<T>(operation = 'operation', message = 'message', result?: T) {
+    console.error(message);
+    this.log(`${operation} failed: ${message}`);
+
+    return of(result as T);
   }
 
   // TODO: consider using a message service to send logs to server

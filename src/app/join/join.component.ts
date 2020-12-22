@@ -11,6 +11,7 @@ import { PlayerService } from '../player.service';
 })
 export class JoinComponent implements OnInit {
   errorMessage?: string;
+  hasError: boolean = false;
 
   constructor(private playerService: PlayerService, private router: Router) { }
 
@@ -19,24 +20,38 @@ export class JoinComponent implements OnInit {
 
   private clearErrors() {
     this.errorMessage = null;
+    this.hasError = false;
   }
 
   onSubmit(): void {
     this.clearErrors();
-    var celebs: string[] = [this.choice0.value, this.choice1.value, this.choice2.value, this.choice3.value, this.choice4.value];
-    var wildcards: string[] = [this.wildcard0.value];
-    status = this.playerService.submitPlayer(this.name.value, this.email.value, celebs, wildcards);
-    // TODO: Not fantastic to do string comparisons for statuses. Implement a proper status code and message system.
-    if (status === '') {
-      this.router.navigate(['/success']);
-    }
-    else {
-      this.errorMessage = status;
-    }
+    this.playerService.submitPlayer(this.firstname.value, this.lastname.value, this.email.value)
+      .subscribe((id) => {
+        if (id === undefined) {
+          this.errorMessage = 'Something went wrong! Please try again later';
+          this.hasError = true;
+        }
+
+        if (!this.hasError) {
+          let celebs: string[] = [this.choice0.value, this.choice1.value, this.choice2.value, this.choice3.value, this.choice4.value];
+          let wildcards: string[] = [this.wildcard0.value];
+          this.playerService.submitEntry(id, celebs, wildcards).subscribe((id) => {
+            if (id === undefined) {
+              this.errorMessage = 'Something went wrong! Please try again later';
+              this.hasError = true;
+            }
+            // TODO: Not fantastic to do string comparisons for statuses. Implement a proper status code and message system.
+            if (!this.hasError) {
+              this.router.navigate(['/success']);
+            }
+          });
+        }
+      });
   }
 
   joinForm = new FormGroup({
-    name: new FormControl('', [Validators.required]),
+    firstname: new FormControl('', [Validators.required]),
+    lastname: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.required, Validators.email]),
     // TODO: update to use a dynamic form for repeated fields
     choice0: new FormControl('', [Validators.required]),
@@ -47,7 +62,8 @@ export class JoinComponent implements OnInit {
     wildcard0: new FormControl('', [Validators.required]),
   });
 
-  get name() { return this.joinForm.get('name'); }
+  get firstname() { return this.joinForm.get('firstname'); }
+  get lastname() { return this.joinForm.get('lastname'); }
   get email() { return this.joinForm.get('email'); }
   get choice0() { return this.joinForm.get('choice0'); }
   get choice1() { return this.joinForm.get('choice1'); }

@@ -1,20 +1,28 @@
 export class Player {
-  firstname: string;
-  lastname: string;
-  email?: string;
+  playerId?: bigint;
+  firstName?: string;
+  lastName?: string;
+  emailAddress?: string;
   entries?: Entry[];
 }
 
 export class Entry {
+  entryId?: bigint;
   points?: number;
-  isApproved?: boolean;
-  isPaid?: boolean;
-  selections?: Celebrity[];
+  approved?: boolean;
+  paid?: boolean;
+  entrySelections?: EntrySelection[];
   player?: Player;
 }
 
+export class EntrySelection {
+  entrySelectionId?: bigint;
+  wildcard?: boolean;
+  celebrity?: Celebrity;
+}
+
 export class Celebrity {
-  name: string;
-  isDead?: boolean;
-  isWildcard?: boolean;
+  celebrityId?: bigint;
+  celebrityName?: string;
+  dead?: boolean;
 }
