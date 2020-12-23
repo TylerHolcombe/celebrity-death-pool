@@ -10,10 +10,18 @@ import { Entry } from '../../player';
 export class TableComponent implements OnInit {
   @Input() entries: Entry[];
   @Input() showApproved?: boolean;
+  updatedEntries: boolean[];
 
   constructor() { }
 
   ngOnInit(): void {
   }
 
+  updateEntry(index: number): void {
+    this.entries[index].approved = !this.entries[index].approved;
+    if (!this.updatedEntries) {
+      this.updatedEntries = new Array(this.entries.length).fill(false);
+    }
+    this.updatedEntries[index] = true;
+  }
 }
