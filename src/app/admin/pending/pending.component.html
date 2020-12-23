@@ -1,4 +1,4 @@
-<app-table [entries]="entries" [showApproved]="true"></app-table>
+<app-table [entries]="entries" [showApproved]="true" #pendingTable></app-table>
 <div class="container fixed-bottom bg-dark w-100">
-  <button type="button" name="save-changes" class="btn btn-primary w-100 mt-3">Save Changes</button>
+  <button type="button" name="save-changes" class="btn btn-primary w-100 mt-3" (click)="saveEntries()">Save Changes</button>
 </div>

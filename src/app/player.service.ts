@@ -95,6 +95,14 @@ export class PlayerService {
       );
   }
 
+  saveEntries(entries: Entry[]) {
+    return this.http.put<bigint>(this.serviceEndpoint + "/entries", entries)
+      .pipe(
+        tap(_ => this.log("updating entries")),
+        catchError(this.handleError<bigint>('saveEntries'))
+      );
+  }
+
   private mapSelection(selection: string, wildcard: boolean): EntrySelection {
     let entrySelection: EntrySelection = {
       celebrity: {

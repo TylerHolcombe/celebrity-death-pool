@@ -11,7 +11,7 @@
     <ng-container *ngFor="let entry of entries; let index = index;">
       <tr>
         <td *ngIf="showApproved" [rowSpan]="entry.entrySelections.length + 1" class="text-center">
-          <input type="checkbox" class="form-check-input" [checked]="entries[index].approved" (change)="entries[index].approved = !entries[index].approved">
+          <input type="checkbox" class="form-check-input" [checked]="entries[index].approved" (change)="updateEntry(index)">
         </td>
         <td [rowSpan]="entry.entrySelections.length + 1">{{entry.player.firstName}} {{entry.player.lastName}}</td>
         <td [rowSpan]="entry.entrySelections.length + 1">{{entry.points}}</td>
